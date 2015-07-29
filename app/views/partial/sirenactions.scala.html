@@ -4,6 +4,9 @@
     <h3>@a.title.getOrElse(a.name)</h3>
     <form action="@routes.Application.submit()" method="@a.method">
         <input type="hidden" name="@Application.SIREN_ACTION_URL_FIELD" id="sirenurl" value="@a.href" readonly>
+        @for(m <- a.method) {
+            <input type="hidden" name="@Application.SIREN_ACTION_METHOD_FIELD" id="sirenmethod" value="@{m.name}" readonly>
+        }
         @for(t <- a.`type`) {
             <input type="hidden" name="@Application.SIREN_ACTION_FORMAT_FIELD" id="sirenformat" value="@{t.toString}" readonly>
         }

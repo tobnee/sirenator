@@ -18,8 +18,10 @@ object Application {
 
   val SIREN_ACTION_URL_FIELD = "sirenactionurl"
   val SIREN_ACTION_FORMAT_FIELD = "sirenactionformat"
+  val SIREN_ACTION_METHOD_FIELD = "sirenactionmethod"
 
   private val DEFAULT_ACTION_ENCODING = Some(List("application/x-www-form-urlencoded"))
+  private val DEFAULT_ACTION_METHOD = Some(List("POST"))
 }
 
 class Application @Inject()(ws: WSClient) extends Controller with ConditionalLayout with SirenPropertyFormat {
@@ -48,13 +50,13 @@ class Application @Inject()(ws: WSClient) extends Controller with ConditionalLay
   }
 
   def submit() = ConditionalLayoutAction.async(parse.urlFormEncoded) { implicit req =>
-    val body= req.body
-    extractUrlFormat(body) match {
-      case Some((url, format)) =>
+    val body = req.body
+    extractSirenActionMetadata(body) match {
+      case Some((url, format, method)) =>
         val formWithoutControls =
-          body - Application.SIREN_ACTION_URL_FIELD - Application.SIREN_ACTION_FORMAT_FIELD
-        Logger.info(s"try to post $formWithoutControls in format $format to $url")
-        withRequest(ws.url(url), format, formWithoutControls).execute("POST").map { response =>
+          body - Application.SIREN_ACTION_URL_FIELD - Application.SIREN_ACTION_FORMAT_FIELD - Application.SIREN_ACTION_METHOD_FIELD
+        Logger.info(s"try to post $formWithoutControls in format $format to $url with method $method")
+        withRequest(ws.url(url), format, formWithoutControls).execute(method).map { response =>
           Logger.info("response from service " + response)
           val j = response.json
           val re = j.as[RootEntity]
@@ -75,13 +77,15 @@ class Application @Inject()(ws: WSClient) extends Controller with ConditionalLay
     }
   }
 
-  def extractUrlFormat(body: Map[String, Seq[String]]) = {
+  def extractSirenActionMetadata(body: Map[String, Seq[String]]) = {
     for {
       url <- body.get(Application.SIREN_ACTION_URL_FIELD)
+      method <- body.get(Application.SIREN_ACTION_METHOD_FIELD) orElse Application.DEFAULT_ACTION_METHOD
       format <- body.get(Application.SIREN_ACTION_FORMAT_FIELD) orElse Application.DEFAULT_ACTION_ENCODING
+      m <- method.headOption
       u <- url.headOption
       f <- format.headOption
-    } yield (u, f)
+    } yield (u, f, m)
   }
 
   def renderCond(title: String, content: Html)(implicit req: ConditionalLayoutRequest[_]) = {
