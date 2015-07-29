@@ -1,0 +1,5 @@
+@(propJson: Option[com.yetu.siren.model.Properties])(implicit pw: play.api.libs.json.Writes[com.yetu.siren.model.Properties])
+@import play.api.libs.json.Json
+@propJson.map { ps =>
+    <pre class="prettyprint">@Json.prettyPrint(Json.toJson(ps))</pre>
+}

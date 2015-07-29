@@ -1,0 +1,4 @@
+@(classes: Option[scala.collection.immutable.Seq[scala.Predef.String]])
+@for(c <- classes.getOrElse(Nil)) {
+    <span class="label label-default">@c</span>
+}

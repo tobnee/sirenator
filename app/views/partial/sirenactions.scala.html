@@ -1,0 +1,23 @@
+@(actions: Option[scala.collection.immutable.Seq[com.yetu.siren.model.Action]])
+@import controllers.Application
+@for(a <- actions.getOrElse(Nil)) {
+    <h3>@a.title.getOrElse(a.name)</h3>
+    <form action="@routes.Application.submit()" method="@a.method">
+        <input type="hidden" name="@Application.SIREN_ACTION_URL_FIELD" id="sirenurl" value="@a.href" readonly>
+        @for(t <- a.`type`) {
+            <input type="hidden" name="@Application.SIREN_ACTION_FORMAT_FIELD" id="sirenformat" value="@{t.toString}" readonly>
+        }
+        @for(f <- a.fields.getOrElse(Nil)) {
+            <div class="form-group">
+            @if(f.`type` == com.yetu.siren.model.Action.Field.Type.hidden) {
+                <label for="@f.name">@f.title.getOrElse(f.name) (hidden)</label>
+                <input name="@f.name" class="form-control" id="@f.name" value="@f.value" readonly>
+            } else {
+                <label for="@f.name">@f.title.getOrElse(f.name)</label>
+                <input name="@f.name" type="@{f.`type`.name}" class="form-control" id="@f.name" value="@f.value">
+                }
+            </div>
+        }
+    <button type="submit" class="btn btn-default">Submit</button>
+    </form>
+}

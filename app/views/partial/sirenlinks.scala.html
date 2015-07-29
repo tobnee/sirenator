@@ -1,0 +1,8 @@
+@(links: Option[scala.collection.immutable.Seq[com.yetu.siren.model.Link]])
+<nav>
+    <ul class="pager">
+        @for(l <- links.getOrElse(Nil)) {
+            <li><a href="@routes.Application.query(l.href)">@l.rel @l.title.map(t => " (" + t + " )")</a></li>
+        }
+    </ul>
+</nav>

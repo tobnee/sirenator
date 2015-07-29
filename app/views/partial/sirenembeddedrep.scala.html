@@ -1,0 +1,8 @@
+@(root: com.yetu.siren.model.Entity.EmbeddedRepresentation)(implicit pw: play.api.libs.json.Writes[com.yetu.siren.model.Properties])
+
+@partial.sirenclasses(root.classes)
+<br>
+<br>
+@partial.sirenprop(root.properties)
+@partial.sirenactions(root.actions)
+@partial.sirenlinks(root.links)

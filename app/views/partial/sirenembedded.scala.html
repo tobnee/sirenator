@@ -1,0 +1,38 @@
+@(entities: Option[scala.collection.immutable.Seq[com.yetu.siren.model.EmbeddedEntity]])(implicit pw: play.api.libs.json.Writes[com.yetu.siren.model.Properties])
+@import com.yetu.siren.model.Entity.EmbeddedLink
+
+@if(entities.isDefined) {
+    <div>
+        @defining(entities.get.zipWithIndex) { entitiesWithIndex =>
+            <ul class="nav nav-tabs" role="tablist">
+                @for((e, i) <- entitiesWithIndex) {
+                    @if(i == 0) {
+                        <li role="presentation" class="active"><a href="#entitydetails@i" aria-controls="entitydetails@i" role="tab" data-toggle="tab">@e.rel.mkString(", ")</a></li>
+                    } else {
+                        <li role="presentation"><a href="#entitydetails@i" aria-controls="entitydetails@i" role="tab" data-toggle="tab">@e.rel.mkString(", ")</a></li>
+                    }
+                }
+            </ul>
+            <div class="tab-content">
+            @for((e, i) <- entitiesWithIndex) {
+                @if(i == 0) {
+                    <div role="tabpanel" class="tab-pane active" id="entitydetails@i">
+                    } else {
+                    <div role="tabpanel" class="tab-pane" id="entitydetails@i">
+                    }
+                @e match {
+
+                    case el: EmbeddedLink => {
+                        @partial.sirenembeddedlink(el)
+                    }
+
+                    case er: com.yetu.siren.model.Entity.EmbeddedRepresentation => {
+                        @partial.sirenembeddedrep(er)
+                    }
+                }
+                </div>
+            }
+            </div>
+           }
+    </div>
+}

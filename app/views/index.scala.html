@@ -1,0 +1,19 @@
+@()
+@main("Query Siren Api") {
+    <form id="data-pjax" action="/siren">
+        <div class="form-group">
+            <label for="">Siren Resource</label>
+            <input type="url" class="form-control" name="url" id="sirenUrl" placeholder="Siren URL">
+        </div>
+        <button type="submit" class="btn btn-default">Query</button>
+    </form>
+
+    <div id="pjax-container"></div>
+
+    <script>
+    $(document).on('submit', '#data-pjax', function(event) {
+        event.preventDefault();
+        $.pjax.submit(event, '#pjax-container')
+    })
+    </script>
+}
